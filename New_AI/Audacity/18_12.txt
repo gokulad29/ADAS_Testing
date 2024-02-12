@@ -1,0 +1,8 @@
+Gaussian
+salt and pepper
+uniform noise
+periodic noise
+impulse noise
+Quantization Noise
+color Noise
+Environmental Noise
