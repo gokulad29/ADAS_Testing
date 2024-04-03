@@ -1,0 +1,40 @@
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from sklearn.model_selection import train_test_split
+
+# Example dataset loading function
+def load_dataset():
+    # Placeholder function to load your dataset
+    # This function should return a tuple of four numpy arrays: (X_train_noisy, X_train_clean, X_test_noisy, X_test_clean)
+    # Replace this with loading your actual dataset
+    return np.random.rand(100, 28, 28, 1), np.random.rand(100, 28, 28, 1), np.random.rand(20, 28, 28, 1), np.random.rand(20, 28, 28, 1)
+
+X_train_noisy, X_train_clean, X_test_noisy, X_test_clean = load_dataset()
+
+# Define the encoder
+encoder = models.Sequential([
+    layers.Input(shape=(28, 28, 1)),
+    layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
+    layers.MaxPooling2D((2, 2), padding='same'),
+    layers.Conv2D(16, (3, 3), activation='relu', padding='same'),
+    layers.MaxPooling2D((2, 2), padding='same'),
+])
+
+# Define the decoder
+decoder = models.Sequential([
+    layers.Conv2D(16, (3, 3), activation='relu', padding='same', input_shape=encoder.output_shape[1:]),
+    layers.UpSampling2D((2, 2)),
+    layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
+    layers.UpSampling2D((2, 2)),
+    layers.Conv2D(1, (3, 3), activation='sigmoid', padding='same'),
+])
+
+# Connect the encoder and decoder to form the autoencoder
+autoencoder = models.Sequential([encoder, decoder])
+
+# Compile the model
+autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+
+# Train the model
+autoencoder.fit(X_train_noisy, X_train_clean, epochs=50, batch_size=128, validation_data=(X_test_noisy, X_test_clean))
